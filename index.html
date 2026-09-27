@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#060913">
+<title>منصة هندسة تكنولوجيا المعلومات التفاعلية - قسم IT</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<style>
+:root{
+  --bg:#060913;--panel:rgba(11,18,35,.72);--panel2:rgba(17,25,48,.78);
+  --cyan:#06b6d4;--indigo:#6366f1;--purple:#a855f7;--green:#22c55e;
+  --yellow:#f59e0b;--red:#ef4444;--text:#e8eefc;--muted:#9aa7c2;
+  --border:rgba(148,163,184,.16);--shadow:0 20px 60px rgba(0,0,0,.38);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--text);font-family:Cairo,system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(6,182,212,.12),transparent 28%),
+    radial-gradient(circle at 90% 15%,rgba(168,85,247,.12),transparent 25%),
+    radial-gradient(circle at 50% 100%,rgba(99,102,241,.10),transparent 30%),var(--bg);
+  min-height:100vh;
+}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.hidden{display:none!important}
+.container{width:min(1250px,92%);margin:auto}
+.glass{
+  background:linear-gradient(145deg,rgba(18,27,51,.78),rgba(8,13,27,.66));
+  border:1px solid var(--border);box-shadow:var(--shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius);
+}
+.glow-border{position:relative;isolation:isolate}
+.glow-border:before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(6,182,212,.6),transparent 35%,rgba(168,85,247,.55));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:-1}
+.btn{
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);
+  padding:11px 16px;border-radius:13px;transition:.2s;display:inline-flex;gap:8px;align-items:center;justify-content:center
+}
+.btn:hover{transform:translateY(-2px);border-color:rgba(6,182,212,.45);box-shadow:0 0 25px rgba(6,182,212,.12)}
+.btn.primary{background:linear-gradient(135deg,#0891b2,#4f46e5);border:0;box-shadow:0 8px 25px rgba(6,182,212,.2)}
+.btn.danger{background:rgba(239,68,68,.1);color:#fecaca}
+.btn.success{background:rgba(34,197,94,.1);color:#bbf7d0}
+.btn.small{padding:8px 11px;font-size:.88rem}
+input,select,textarea{
+  width:100%;background:rgba(3,7,18,.65);border:1px solid var(--border);color:var(--text);
+  border-radius:12px;padding:12px;outline:none
+}
+input:focus,select:focus,textarea:focus{border-color:rgba(6,182,212,.6);box-shadow:0 0 0 3px rgba(6,182,212,.08)}
+textarea{min-height:110px;resize:vertical}
+label{display:block;color:#c8d2e8;font-size:.9rem;margin:0 0 6px}
+.muted{color:var(--muted)}
+.tag,.badge{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:.76rem;
+  background:rgba(6,182,212,.09);border:1px solid rgba(6,182,212,.18);color:#8be9f7
+}
+.badge.purple{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.2);color:#e5c5ff}
+.badge.green{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:#b6f4c9}
+header{position:sticky;top:0;z-index:50;background:rgba(6,9,19,.72);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.07)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800}
+.brand-icon{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--indigo));box-shadow:0 0 28px rgba(6,182,212,.22)}
+.navlinks{display:flex;gap:5px;flex-wrap:wrap}
+.navlinks button{border:0;background:transparent;color:#aab5ca;padding:9px 10px;border-radius:10px}
+.navlinks button:hover,.navlinks button.active{background:rgba(255,255,255,.06);color:#fff}
+main{padding:30px 0 110px}
+.hero{padding:38px;display:grid;grid-template-columns:1.35fr .65fr;gap:25px;overflow:hidden}
+.hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.1;margin:10px 0 16px}
+.gradient{background:linear-gradient(90deg,#67e8f9,#818cf8,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#aeb9ce;line-height:1.9;max-width:760px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.hero-orb{display:grid;place-items:center;min-height:250px;position:relative}
+.orb{width:210px;height:210px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#a5f3fc,rgba(6,182,212,.35) 22%,rgba(99,102,241,.22) 48%,transparent 68%);filter:drop-shadow(0 0 50px rgba(6,182,212,.28));animation:float 5s ease-in-out infinite}
+.orb:after{content:"IT";position:absolute;font-size:4rem;font-weight:800;letter-spacing:-5px}
+@keyframes float{50%{transform:translateY(-12px) scale(1.03)}}
+.section{margin-top:25px}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:0 0 15px}
+.section-title h2{margin:0;font-size:1.55rem}.section-title p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.grid{display:grid;gap:16px}.grid4{grid-template-columns:repeat(4,1fr)}.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:repeat(2,1fr)}
+.card{padding:20px}.stat{display:flex;justify-content:space-between;align-items:center}.stat strong{font-size:1.65rem}.stat i{font-size:1.25rem;color:#67e8f9}
+.progress{height:9px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}.progress span{height:100%;display:block;background:linear-gradient(90deg,var(--cyan),var(--indigo),var(--purple));border-radius:inherit}
+.kpi{display:flex;flex-direction:column;gap:9px}
+.score-ring{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;margin:auto;background:conic-gradient(var(--cyan) calc(var(--p)*1%),rgba(255,255,255,.07) 0);position:relative}
+.score-ring:after{content:"";position:absolute;inset:9px;border-radius:50%;background:#0a1020}.score-ring b{position:relative;z-index:1;font-size:1.45rem}
+table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:11px;border-bottom:1px solid rgba(255,255,255,.07);font-size:.88rem}th{color:#9fb0cd}
+.chart{display:flex;align-items:end;gap:10px;height:160px;padding:15px 5px}.bar{flex:1;min-width:15px;border-radius:8px 8px 3px 3px;background:linear-gradient(to top,var(--indigo),var(--cyan));box-shadow:0 0 20px rgba(6,182,212,.12);position:relative}.bar small{position:absolute;bottom:-23px;width:100%;text-align:center;color:var(--muted)}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px}.tab{border:1px solid var(--border);background:rgba(255,255,255,.03);padding:9px 12px;border-radius:11px;color:#aeb9ce}.tab.active{background:rgba(6,182,212,.11);border-color:rgba(6,182,212,.3);color:#a5f3fc}
+.file-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.file-card{padding:17px}.file-icon{font-size:1.9rem;color:#67e8f9}.file-actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.quiz-q{padding:16px;margin-bottom:12px;border:1px solid var(--border);border-radius:15px;background:rgba(255,255,255,.025)}.option{display:block;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-top:7px;cursor:pointer}.option:hover{background:rgba(255,255,255,.04)}
+.editor{font-family:"Fira Code",monospace;direction:ltr;text-align:left;min-height:250px;line-height:1.6}
+.code-output{font-family:"Fira Code",monospace;white-space:pre-wrap;background:#030711;border-radius:12px;padding:13px;color:#a7f3d0;min-height:65px}
+.chat{height:480px;display:flex;flex-direction:column}.messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}.msg{max-width:82%;padding:11px 13px;border-radius:15px;line-height:1.65}.msg.ai{align-self:flex-start;background:rgba(99,102,241,.13);border:1px solid rgba(99,102,241,.18)}.msg.user{align-self:flex-end;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.18)}.chatbar{display:flex;gap:7px;padding-top:10px}.chatbar input{flex:1}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.chips button{font-size:.78rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:grid;place-items:center;padding:20px}.modal-box{width:min(800px,100%);max-height:90vh;overflow:auto;padding:22px}
+#gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 30%,rgba(6,182,212,.12),transparent 35%),#060913}
+.gate-box{width:min(480px,100%);padding:30px;text-align:center}.gate-logo{width:75px;height:75px;margin:0 auto 15px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--indigo));font-size:2rem;box-shadow:0 0 45px rgba(6,182,212,.25)}
+.status{min-height:27px;margin-top:12px;font-size:.9rem}.status.ok{color:#86efac}.status.bad{color:#fca5a5}
+footer{padding:30px 0;color:#71809d;text-align:center}
+.toast{position:fixed;bottom:22px;left:22px;z-index:300;max-width:340px;padding:13px 16px;border-radius:14px;background:#111a2d;border:1px solid rgba(6,182,212,.25);box-shadow:var(--shadow);transform:translateY(30px);opacity:0;transition:.25s}.toast.show{transform:none;opacity:1}
+.mobile-only{display:none}
+@media(max-width:1000px){.hero{grid-template-columns:1fr}.grid4{grid-template-columns:repeat(2,1fr)}.file-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.navlinks{display:none}.mobile-only{display:block}.grid4,.grid3,.grid2,.file-grid{grid-template-columns:1fr}.hero{padding:24px}.hero-orb{min-height:190px}.orb{width:150px;height:150px}.orb:after{font-size:3rem}.card{padding:16px}.nav{height:64px}.brand span{display:none}}
+</style>
+</head>
+
+<body>
+<div id="gate">
+  <div class="gate-box glass glow-border">
+    <div class="gate-logo"><i class="fa-solid fa-microchip"></i></div>
+    <span class="tag"><i class="fa-solid fa-shield-halved"></i> بوابة دخول تعليمية</span>
+    <h1>منصة IT التفاعلية</h1>
+    <p class="muted">أدخل مفتاح الوصول للانتقال إلى لوحة الطالب.</p>
+    <input id="accessKey" type="password" placeholder="مفتاح الوصول" autocomplete="off">
+    <button class="btn primary" style="width:100%;margin-top:10px" onclick="unlock()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
+    <div id="gateStatus" class="status"></div>
+    <small class="muted">نسخة Front-end تعليمية — لا تستخدم كلمة مرور العميل كحماية حقيقية.</small>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header>
+  <div class="container nav">
+    <div class="brand"><div class="brand-icon"><i class="fa-solid fa-microchip"></i></div><span>IT Engineering Hub</span></div>
+    <nav class="navlinks">
+      <button class="active" onclick="scrollToId('dashboard')">الرئيسية</button>
+      <button onclick="scrollToId('grades')">الدرجات</button>
+      <button onclick="scrollToId('quizzes')">الاختبارات</button>
+      <button onclick="scrollToId('files')">المحاضرات</button>
+      <button onclick="scrollToId('lab')">المختبر</button>
+      <button onclick="scrollToId('ai')">عباس AI</button>
+    </nav>
+    <button class="btn small mobile-only" onclick="scrollToId('dashboard')"><i class="fa-solid fa-house"></i></button>
+  </div>
+</header>
+
+<main class="container">
+<section id="dashboard" class="hero glass glow-border">
+  <div>
+    <span class="badge purple"><i class="fa-solid fa-graduation-cap"></i> Bologna • IT Engineering</span>
+    <h1>منصة <span class="gradient">هندسة تكنولوجيا المعلومات</span> التفاعلية</h1>
+    <p>لوحة تعليمية موحدة تجمع متابعة الدرجات، الاختبارات، المختبر، المحاضرات، والشرح التفاعلي باللهجة العراقية أو العربية الفصحى أو الإنجليزية.</p>
+    <div class="hero-actions">
+      <button class="btn primary" onclick="scrollToId('quizzes')"><i class="fa-solid fa-bolt"></i> ابدأ اختبار سريع</button>
+      <button class="btn" onclick="scrollToId('files')"><i class="fa-solid fa-folder-open"></i> افتح مركز الملفات</button>
+    </div>
+  </div>
+  <div class="hero-orb"><div class="orb"></div></div>
+</section>
+
+<section class="section">
+  <div class="grid grid4">
+    <div class="card glass kpi"><div class="stat"><span class="muted">المعدل الحالي</span><i class="fa-solid fa-chart-line"></i></div><strong id="avgStat">0%</strong><div class="progress"><span id="avgBar" style="width:0%"></span></div></div>
+    <div class="card glass kpi"><div class="stat"><span class="muted">الـ ECTS المكتسب</span><i class="fa-solid fa-award"></i></div><strong id="ectsStat">0 / 30</strong><div class="progress"><span id="ectsBar" style="width:0%"></span></div></div>
+    <div class="card glass kpi"><div class="stat"><span class="muted">الاختبارات المنجزة</span><i class="fa-solid fa-list-check"></i></div><strong id="quizStat">0</strong><span class="muted">تزداد تلقائياً بعد الإرسال</span></div>
+    <div class="card glass kpi"><div class="stat"><span class="muted">الشارات</span><i class="fa-solid fa-medal"></i></div><strong id="badgeStat">0</strong><span class="muted">إنجازاتك التعليمية</span></div>
+  </div>
+</section>
+
+<section id="grades" class="section">
+  <div class="section-title"><div><h2>نظام درجات بولونيا</h2><p>توزيع قابل للتعديل — 100 درجة إجمالية، مع تحويل تقريبي إلى ECTS.</p></div><span class="tag"><i class="fa-solid fa-scale-balanced"></i> 100 marks</span></div>
+  <div class="grid grid2">
+    <div class="card glass">
+      <table><thead><tr><th>المكوّن</th><th>الوزن</th><th>درجة الطالب</th><th>النسبة</th></tr></thead><tbody id="gradeTable"></tbody></table>
+    </div>
+    <div class="card glass" style="display:grid;place-items:center">
+      <div class="score-ring" id="scoreRing" style="--p:0"><b id="ringText">0%</b></div>
+      <h3 style="margin:8px 0 0">التقدم الأكاديمي</h3>
+      <p class="muted" style="text-align:center">هذا التحويل تعليمي فقط. قواعد ECTS/التقدير الرسمية يجب مطابقتها مع لائحة الجامعة والمقرر.</p>
+    </div>
+  </div>
+</section>
+
+<section id="analytics" class="section">
+  <div class="section-title"><div><h2>تحليل الأداء</h2><p>راقب نقاط القوة والمواضيع التي تحتاج مراجعة.</p></div></div>
+  <div class="grid grid3">
+    <div class="card glass"><h3>أداء الوحدات</h3><div id="topicBars"></div></div>
+    <div class="card glass"><h3>درجات الاختبارات</h3><div class="chart" id="quizChart"></div></div>
+    <div class="card glass"><h3>مؤشرات الدراسة</h3><div style="display:grid;gap:12px">
+      <div><div class="stat"><span>Python</span><b id="pythonPct">0%</b></div><div class="progress"><span id="pythonBar" style="width:0%"></span></div></div>
+      <div><div class="stat"><span>Web</span><b id="webPct">0%</b></div><div class="progress"><span id="webBar" style="width:0%"></span></div></div>
+      <div><div class="stat"><span>Computer Architecture</span><b id="archPct">0%</b></div><div class="progress"><span id="archBar" style="width:0%"></span></div></div>
+    </div></div>
+  </div>
+</section>
+
+<section id="quizzes" class="section">
+  <div class="section-title"><div><h2>محرك الاختبارات والواجبات</h2><p>MCQ + تصحيح فوري + شرح مختصر.</p></div><span class="badge green"><i class="fa-solid fa-circle-check"></i> Auto grading</span></div>
+  <div class="card glass">
+    <div id="quizBox"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="quizProgress" class="muted"></span>
+      <button class="btn primary" onclick="submitQuiz()"><i class="fa-solid fa-paper-plane"></i> إرسال الاختبار</button>
+    </div>
+    <div id="quizResult" class="hidden" style="margin-top:15px"></div>
+  </div>
+</section>
+
+<section id="lab" class="section">
+  <div class="section-title"><div><h2>مختبر Python</h2><p>فحص أساسي للـ syntax وتشغيل أمثلة آمنة في المتصفح. التنفيذ هنا محاكاة تعليمية وليس Python runtime حقيقياً.</p></div></div>
+  <div class="grid grid2">
+    <div class="card glass">
+      <label>Python code</label>
+      <textarea id="codeEditor" class="editor">name = "Abbas"
+print("Hello", name)</textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn primary" onclick="checkPython()"><i class="fa-solid fa-code"></i> فحص الكود</button>
+        <button class="btn" onclick="loadPythonExample()"><i class="fa-solid fa-rotate"></i> مثال</button>
+      </div>
+    </div>
+    <div class="card glass">
+      <h3>نتيجة الفحص</h3>
+      <div id="codeOutput" class="code-output">جاهز للفحص...</div>
+      <div style="margin-top:15px"><span class="tag">اقتراح: جرّب المتغيرات، print، if، for، functions.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="files" class="section">
+  <div class="section-title"><div><h2>مركز المحاضرات والملخصات</h2><p>ملفات محلية لهذه النسخة التجريبية، مع تصنيف ومعاينة وتنزيل.</p></div></div>
+  <div class="card glass">
+    <div class="grid grid3">
+      <div><label>تصنيف الملف</label><select id="fileCategory"><option>Official University Lectures</option><option>Student Summaries</option><option>Lab Manuals</option><option>Quizzes & Solved Exams</option></select></div>
+      <div><label>رفع ملف</label><input id="fileInput" type="file" accept=".pdf,.ipynb,.py,.txt,.png,.jpg,.jpeg,.webp"></div>
+      <div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" onclick="addFile()"><i class="fa-solid fa-cloud-arrow-up"></i> إضافة للمستودع</button></div>
+    </div>
+    <div class="tabs" style="margin-top:18px"><button class="tab active" onclick="filterFiles('all',this)">الكل</button><button class="tab" onclick="filterFiles('Official University Lectures',this)">محاضرات</button><button class="tab" onclick="filterFiles('Student Summaries',this)">ملخصات</button><button class="tab" onclick="filterFiles('Lab Manuals',this)">مختبر</button><button class="tab" onclick="filterFiles('Quizzes & Solved Exams',this)">أسئلة</button></div>
+    <div id="fileGrid" class="file-grid"></div>
+  </div>
+</section>
+
+<section id="ai" class="section">
+  <div class="section-title"><div><h2>عباس AI — المساعد الدراسي</h2><p>نسخة Front-end ذكية بقواعد محلية. يمكن ربطها لاحقاً بـ API آمن على الخادم.</p></div><span class="badge purple"><i class="fa-solid fa-robot"></i> Tutor</span></div>
+  <div class="card glass chat">
+    <div class="chips">
+      <button class="btn small" onclick="quickPrompt('اشرح لي أساسيات Python')">اشرح Python</button>
+      <button class="btn small" onclick="quickPrompt('كيف أحسب درجات بولونيا؟')">حساب الدرجات</button>
+      <button class="btn small" onclick="quickPrompt('صحح لي هذا الخطأ: indentation')">صحح خطأ Python</button>
+      <button class="btn small" onclick="quickPrompt('شنو الفرق بين RAM و Cache؟')">RAM vs Cache</button>
+    </div>
+    <div id="messages" class="messages"></div>
+    <div class="chatbar"><input id="chatInput" placeholder="اكتب سؤالك بالعراقي أو العربي أو English..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn primary" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button></div>
+  </div>
+</section>
+
+<section id="feedback" class="section">
+  <div class="section-title"><div><h2>التواصل والـ Feedback</h2><p>يمكن ربط النموذج مع Google Apps Script لحفظ البيانات في Google Sheets.</p></div></div>
+  <div class="card glass">
+    <div class="grid grid2">
+      <div><label>الاسم</label><input id="fbName" placeholder="اسم الطالب"></div>
+      <div><label>نوع الطلب</label><select id="fbType"><option>استفسار</option><option>تسليم واجب</option><option>ملاحظة على محاضرة</option><option>مقترح</option></select></div>
+    </div>
+    <label style="margin-top:12px">الرسالة</label><textarea id="fbMessage" placeholder="اكتب الرسالة..."></textarea>
+    <button class="btn primary" onclick="sendFeedback()" style="margin-top:10px"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+    <p id="fbStatus" class="muted"></p>
+  </div>
+</section>
+
+<footer>© 2026 منصة هندسة تكنولوجيا المعلومات — Eng. Abbas Karim Odeh</footer>
+</main>
+</div>
+
+<div id="previewModal" class="modal hidden" onclick="if(event.target===this)closePreview()">
+  <div class="modal-box glass">
+    <div class="stat"><h3 id="previewTitle">Preview</h3><button class="btn small" onclick="closePreview()">إغلاق</button></div>
+    <div id="previewBody" style="margin-top:15px"></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* =========================
+   CONFIGURATION
+   ========================= */
+const CONFIG = {
+  accessKeys: ["عباس عباس","abbas abbas"],
+  googleAppsScriptUrl: "", // ضع هنا Web App URL بعد نشر Apps Script
+  studentName: "عباس كريم عودة",
+  totalECTS: 30
+};
+
+/* =========================
+   STATE
+   ========================= */
+const state = JSON.parse(localStorage.getItem("itHubState") || "null") || {
+  grades:{formative:12,summative:16,midterm:13,quizzes:8,practical:18,final:0},
+  quizHistory:[],
+  badges:[],
+  files:[],
+  topics:{Python:72,Web:66,Architecture:58}
+};
+function save(){localStorage.setItem("itHubState",JSON.stringify(state));renderAll()}
+
+/* =========================
+   ACCESS GATE
+   ========================= */
+function unlock(){
+  const val=document.getElementById("accessKey").value.trim().toLowerCase();
+  const status=document.getElementById("gateStatus");
+  if(CONFIG.accessKeys.map(x=>x.toLowerCase()).includes(val)){
+    status.textContent="تم التحقق، هلا بيك بالمنصة 🌟";
+    status.className="status ok";
+    setTimeout(()=>{document.getElementById("gate").classList.add("hidden");document.getElementById("app").classList.remove("hidden")},450);
+  }else{
+    status.textContent="المفتاح مو صحيح، جرّب مرة ثانية.";
+    status.className="status bad";
+  }
+}
+
+/* =========================
+   GRADEBOOK
+   ========================= */
+const gradeMeta=[
+  ["formative","Formative Assessment",15],
+  ["summative","Summative Assessment",20],
+  ["midterm","Midterm",15],
+  ["quizzes","Quizzes",10],
+  ["practical","Practical Labs",20],
+  ["final","Final Exam",20]
+];
+function totalGrade(){return gradeMeta.reduce((s,[k,,max])=>s+Math.min(Math.max(Number(state.grades[k])||0,0),max),0)}
+function ectsEarned(){return totalGrade()>=50?Math.round(CONFIG.totalECTS*Math.min(totalGrade()/100,1)):0}
+function gradeTable(){
+  document.getElementById("gradeTable").innerHTML=gradeMeta.map(([k,name,max])=>{
+    const v=Math.min(Math.max(Number(state.grades[k])||0,0),max);
+    return `<tr><td>${name}</td><td>${max}</td><td><input type="number" min="0" max="${max}" value="${v}" onchange="state.grades.${k}=this.value;save()"></td><td>${Math.round(v/max*100)}%</td></tr>`
+  }).join("");
+}
+function renderGrades(){
+  gradeTable();
+  const total=totalGrade(), avg=Math.round(total);
+  document.getElementById("avgStat").textContent=avg+"%";
+  document.getElementById("avgBar").style.width=avg+"%";
+  document.getElementById("ectsStat").textContent=ectsEarned()+" / "+CONFIG.totalECTS;
+  document.getElementById("ectsBar").style.width=(ectsEarned()/CONFIG.totalECTS*100)+"%";
+  document.getElementById("scoreRing").style.setProperty("--p",avg);
+  document.getElementById("ringText").textContent=avg+"%";
+}
+
+/* =========================
+   QUIZ
+   ========================= */
+const questions=[
+ {q:"أي دالة تُستخدم لطباعة نص في Python؟",opts:["echo()","print()","write()","show()"],a:1,e:"الدالة print() تطبع القيمة على الشاشة."},
+ {q:"أي نوع بيانات يمثل نصاً في Python؟",opts:["int","float","str","bool"],a:2,e:"str اختصار String للنصوص."},
+ {q:"ما وظيفة RAM بشكل أساسي؟",opts:["تخزين مؤقت للبيانات قيد الاستخدام","تشغيل الإنترنت","حفظ الملفات دائماً","تبريد المعالج"],a:0,e:"RAM ذاكرة عمل مؤقتة للبيانات والبرامج المستخدمة."},
+ {q:"في HTML، أي tag يمثل العنوان الرئيسي؟",opts:["<p>","<h1>","<title>","<head>"],a:1,e:"h1 يمثل العنوان الرئيسي داخل محتوى الصفحة."},
+ {q:"أي مما يلي ليس لغة برمجة؟",opts:["Python","C++","HTML","Java"],a:2,e:"HTML لغة ترميز وليست لغة برمجة عامة."}
+];
+function renderQuiz(){
+  document.getElementById("quizBox").innerHTML=questions.map((x,i)=>`<div class="quiz-q"><b>${i+1}. ${x.q}</b>${x.opts.map((o,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join("")}</div>`).join("");
+  document.getElementById("quizProgress").textContent=`${questions.length} أسئلة • الدرجة ${questions.length*20}`;
+}
+function submitQuiz(){
+  let score=0,details=[];
+  questions.forEach((x,i)=>{
+    const checked=document.querySelector(`input[name="q${i}"]:checked`);
+    const got=checked?Number(checked.value):-1;
+    if(got===x.a)score++;
+    details.push({q:x.q,correct:got===x.a,ex:x.e});
+  });
+  const percent=Math.round(score/questions.length*100);
+  state.quizHistory.push({date:new Date().toLocaleString("ar-IQ"),score,percent});
+  if(percent>=80 && !state.badges.includes("Quiz Master"))state.badges.push("Quiz Master");
+  if(percent===100 && !state.badges.includes("Perfect Score"))state.badges.push("Perfect Score");
+  document.getElementById("quizResult").classList.remove("hidden");
+  document.getElementById("quizResult").innerHTML=`<div class="card" style="padding:16px;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.18)"><h3>نتيجتك: ${score}/${questions.length} — ${percent}%</h3>${details.map((d,i)=>`<p>${d.correct?"✅":"❌"} سؤال ${i+1}: ${d.ex}</p>`).join("")}</div>`;
+  if(window.confetti)confetti({particleCount:percent>=80?160:70,spread:80,origin:{y:.65}});
+  save();toast("تم تصحيح الاختبار وإضافة النتيجة.");
+}
+
+/* =========================
+   ANALYTICS
+   ========================= */
+function renderAnalytics(){
+  const topics=state.topics;
+  document.getElementById("topicBars").innerHTML=Object.entries(topics).map(([k,v])=>`<div style="margin:12px 0"><div class="stat"><span>${k}</span><b>${v}%</b></div><div class="progress"><span style="width:${v}%"></span></div></div>`).join("");
+  ["Python","Web","Architecture"].forEach(k=>{
+    const id=k==="Architecture"?"arch":k.toLowerCase();
+    document.getElementById(id+"Pct").textContent=topics[k]+"%";
+    document.getElementById(id+"Bar").style.width=topics[k]+"%";
+  });
+  const hist=state.quizHistory.slice(-7);
+  document.getElementById("quizChart").innerHTML=(hist.length?hist:[{percent:0}]).map((x,i)=>`<div class="bar" style="height:${Math.max(8,x.percent)}%"><small>${x.percent}%</small></div>`).join("");
+}
+
+/* =========================
+   FILE HUB
+   ========================= */
+let currentFilter="all";
+function iconFor(name){const n=name.toLowerCase();if(n.endsWith(".pdf"))return"fa-file-pdf";if(n.endsWith(".py"))return"fa-file-code";if(n.endsWith(".ipynb"))return"fa-book-open";if(/\.(png|jpg|jpeg|webp)$/.test(n))return"fa-file-image";return"fa-file-lines"}
+function renderFiles(){
+  const arr=state.files.filter(f=>currentFilter==="all"||f.category===currentFilter);
+  document.getElementById("fileGrid").innerHTML=arr.length?arr.map((f,i)=>`<div class="file-card glass"><div class="file-icon"><i class="fa-solid ${iconFor(f.name)}"></i></div><h3 style="margin:8px 0">${escapeHTML(f.name)}</h3><span class="tag">${escapeHTML(f.category)}</span><p class="muted">${formatBytes(f.size)} • ${f.type||"file"}</p><div class="file-actions"><button class="btn small" onclick="previewFile(${i})"><i class="fa-solid fa-eye"></i> معاينة</button><a class="btn small" download="${escapeHTML(f.name)}" href="${f.data}"><i class="fa-solid fa-download"></i> تنزيل</a><button class="btn small danger" onclick="deleteFile(${i})"><i class="fa-solid fa-trash"></i></button></div></div>`).join(""):`<div class="muted">لا توجد ملفات بهذا التصنيف حالياً.</div>`;
+}
+function addFile(){
+  const input=document.getElementById("fileInput"),file=input.files[0]; if(!file)return toast("اختار ملف أولاً.");
+  if(file.size>8*1024*1024)return toast("النسخة المحلية تسمح حتى 8MB للملف.");
+  const reader=new FileReader();
+  reader.onload=()=>{state.files.push({name:file.name,size:file.size,type:file.type,category:document.getElementById("fileCategory").value,data:reader.result});input.value="";save();toast("تمت إضافة الملف محلياً.")};
+  reader.readAsDataURL(file);
+}
+function filterFiles(f,el){currentFilter=f;document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.remove("active"));el.classList.add("active");renderFiles()}
+function deleteFile(index){state.files.splice(index,1);save();toast("تم حذف الملف من المستودع المحلي.")}
+function previewFile(index){
+  const f=state.files.filter(x=>currentFilter==="all"||x.category===currentFilter)[index];if(!f)return;
+  document.getElementById("previewTitle").textContent=f.name;
+  const n=f.name.toLowerCase();
+  let body;
+  if(f.type.startsWith("image/"))body=`<img src="${f.data}" style="max-width:100%;max-height:65vh;border-radius:12px">`;
+  else if(f.type==="application/pdf"||n.endsWith(".pdf"))body=`<iframe src="${f.data}" style="width:100%;height:65vh;border:0;border-radius:12px"></iframe>`;
+  else if(n.endsWith(".py")||n.endsWith(".txt"))body=`<pre style="white-space:pre-wrap;background:#030711;padding:15px;border-radius:12px;direction:ltr;text-align:left">${escapeHTML(atob(f.data.split(",")[1]||""))}</pre>`;
+  else body=`<p class="muted">المعاينة المباشرة لهذا النوع غير مضافة في النسخة الحالية. استخدم التنزيل.</p>`;
+  document.getElementById("previewBody").innerHTML=body;document.getElementById("previewModal").classList.remove("hidden");
+}
+function closePreview(){document.getElementById("previewModal").classList.add("hidden")}
+function formatBytes(n){if(n<1024)return n+" B";if(n<1024**2)return Math.round(n/1024)+" KB";return (n/1024**2).toFixed(1)+" MB"}
+
+/* =========================
+   PYTHON CHECKER
+   ========================= */
+function checkPython(){
+  const code=document.getElementById("codeEditor").value;
+  const out=document.getElementById("codeOutput");
+  const errors=[];
+  const lines=code.split("\n");
+  lines.forEach((line,i)=>{
+    if(line.includes("print ")&&!line.includes("print("))errors.push(`السطر ${i+1}: استخدم print(...) في Python 3.`);
+    if(line.match(/^\s*if .+[^:]\s*$/))errors.push(`السطر ${i+1}: جملة if تحتاج : في النهاية.`);
+    if(line.match(/^\s*(for|while) .+[^:]\s*$/))errors.push(`السطر ${i+1}: حلقة for/while تحتاج : في النهاية.`);
+  });
+  if(/\bdef\s+\w+\s*\([^)]*\)\s*[^:]/.test(code))errors.push("تعريف الدالة يحتاج : في النهاية.");
+  if(!code.trim())errors.push("المحرر فارغ.");
+  out.textContent=errors.length?"❌ أخطاء/ملاحظات:\n"+errors.join("\n"):"✅ ما ظهرت أخطاء syntax واضحة في هذا الفحص البسيط.\nملاحظة: هذا ليس مفسر Python كاملاً.";
+  if(!errors.length)toast("فحص الكود ناجح مبدئياً.");
+}
+function loadPythonExample(){document.getElementById("codeEditor").value=`def greet(name):
+    message = "Hello " + name
+    print(message)
+
+greet("Abbas")`;}
+
+/* =========================
+   AI LOCAL TUTOR
+   ========================= */
+function addMessage(text,type="ai"){const box=document.getElementById("messages");const div=document.createElement("div");div.className="msg "+type;div.innerHTML=escapeHTML(text).replace(/\n/g,"<br>");box.appendChild(div);box.scrollTop=box.scrollHeight}
+function quickPrompt(t){document.getElementById("chatInput").value=t;sendChat()}
+function sendChat(){
+  const input=document.getElementById("chatInput"),q=input.value.trim();if(!q)return;
+  addMessage(q,"user");input.value="";
+  setTimeout(()=>addMessage(aiReply(q),"ai"),180);
+}
+function aiReply(q){
+  const s=q.toLowerCase();
+  if(s.includes("python")||s.includes("بايثون"))return "أكيد 🌟 بالبداية ركّز على المتغيرات، أنواع البيانات، print، input، if، loops، functions والقوائم. إذا تدزلي الكود أشرحلك سطر سطر وبطريقة عراقية.";
+  if(s.includes("بولونيا")||s.includes("درجات"))return "بشكل عام نحسب مجموع مكونات المقرر حسب أوزانها من 100. بالمنصة تگدر تعدّل درجات Formative وSummative وMidterm وQuizzes وPractical وFinal، وتشوف المجموع مباشرة. قواعد التقدير والـECTS الرسمية تعتمد على لائحة جامعتك.";
+  if(s.includes("indentation")||s.includes("خطأ"))return "إذا الخطأ IndentationError فتأكد أن المسافات داخل if/for/def متساوية، والأفضل تستخدم 4 spaces بدل خلط tabs وspaces. دزلي الكود إذا تريد تصحيحاً دقيقاً.";
+  if(s.includes("ram")&&s.includes("cache"))return "RAM ذاكرة عمل رئيسية أكبر وأبطأ نسبياً، بينما Cache أصغر وأسرع وقريبة من المعالج. الاثنين يساعدان CPU في الوصول للبيانات، لكن وظيفتهما ومستوياتهما مختلفة.";
+  if(s.includes("html")||s.includes("ويب"))return "بالـHTML ركّز أولاً على الهيكل: <!DOCTYPE html> ثم html وhead وbody، وبعدها العناوين h1-h6، الفقرات p، الروابط a، الصور img، القوائم ul/ol/li، والنماذج form.";
+  return "هلا بيك 🌐 أنا Abbas AI بالنسخة المحلية. أگدر أساعدك بـPython وHTML وCSS وComputer Architecture وبولونيا. إذا سؤالك يحتاج معلومات جامعية رسمية، اربطه لاحقاً بواجهة API/مصدر موثوق بدل الاعتماد على إجابة محلية.";
+}
+
+/* =========================
+   GOOGLE SHEETS / APPS SCRIPT
+   ========================= */
+async function sendFeedback(){
+  const payload={name:document.getElementById("fbName").value.trim(),type:document.getElementById("fbType").value,message:document.getElementById("fbMessage").value.trim(),timestamp:new Date().toISOString()};
+  if(!payload.name||!payload.message)return toast("كمّل الاسم والرسالة أولاً.");
+  const status=document.getElementById("fbStatus");
+  if(!CONFIG.googleAppsScriptUrl){
+    localStorage.setItem("lastFeedback",JSON.stringify(payload));
+    status.textContent="تم حفظ الطلب محلياً. أضف رابط Google Apps Script داخل CONFIG لتفعيل الإرسال للسحابة.";
+    return;
+  }
+  status.textContent="جاري الإرسال...";
+  try{
+    await fetch(CONFIG.googleAppsScriptUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    status.textContent="تم إرسال الطلب.";
+    document.getElementById("fbMessage").value="";
+  }catch(e){status.textContent="تعذر الاتصال بالخدمة. تأكد من رابط Apps Script وإعدادات النشر."}
+}
+
+/* =========================
+   UTILITIES / RENDER
+   ========================= */
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+function renderAll(){
+  renderGrades();renderAnalytics();renderFiles();
+  document.getElementById("quizStat").textContent=state.quizHistory.length;
+  document.getElementById("badgeStat").textContent=state.badges.length;
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  renderQuiz();renderAll();
+  addMessage("هلا عباس 👋 أنا Abbas AI. اكتب سؤالك عن Python أو الويب أو بولونيا وأنا أساعدك بالنسخة التعليمية المحلية.");
+});
+</script>
+</body>
+</html>
