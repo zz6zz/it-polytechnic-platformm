@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Engineering Hub — منصة قسم هندسة تكنولوجيا المعلومات | البوليتكنك كربلاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        base: '#040711', base2:'#080c1c',
+        cyan: {DEFAULT:'#06b6d4'}, indigo:{DEFAULT:'#6366f1'},
+        purple:{DEFAULT:'#a855f7'}, emerald:{DEFAULT:'#10b981'},
+      },
+      fontFamily: { ar:['Cairo','sans-serif'], mono:['JetBrains Mono','monospace'] },
+    }
+  }
+}
+</script>
+
+<style>
+  *{box-sizing:border-box;}
+  html{scroll-behavior:auto;}
+  body{
+    background-color:#040711; color:#e7e9f7; font-family:'Cairo',sans-serif; overflow-x:hidden;
+    background-image:
+      radial-gradient(55vw 55vw at 88% -8%, rgba(99,102,241,.22), transparent 60%),
+      radial-gradient(48vw 48vw at 4% 18%, rgba(6,182,212,.14), transparent 60%),
+      radial-gradient(42vw 42vw at 50% 100%, rgba(168,85,247,.14), transparent 60%);
+  }
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:rgba(148,163,255,.25);border-radius:10px;}
+  ::selection{background:#a855f7;color:#fff;}
+
+  .glass{ background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015)); border:1px solid rgba(148,163,255,.14); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+  .glow-edge{ position:relative; }
+  .glow-edge::before{
+    content:''; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
+    background:conic-gradient(from 0deg, #06b6d4, #6366f1, #a855f7, #10b981, #06b6d4);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; opacity:.35; pointer-events:none;
+  }
+  .grad-text{ background:linear-gradient(90deg,#fff 20%,#06b6d4 60%,#a855f7 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .font-mono{ font-family:'JetBrains Mono', monospace; }
+
+  #hero-3d{ position:absolute; inset:0; z-index:0; }
+
+  .tilt-3d{ transform-style:preserve-3d; transition:transform .15s ease-out, border-color .3s, box-shadow .3s; will-change:transform; }
+  .tilt-3d:hover{ box-shadow:0 20px 60px rgba(99,102,241,.25); }
+
+  .code-block{ background:#080c1c; border:1px solid rgba(148,163,255,.14); border-radius:14px; overflow:hidden; }
+  .code-block pre{ margin:0; padding:18px 20px; font-size:12.6px; line-height:1.85; color:#d1d9ff; overflow-x:auto; direction:ltr; text-align:left; }
+  .copy-btn{ transition:.2s; }
+  .copy-btn.copied{ color:#10b981 !important; }
+
+  .timeline-line{ position:absolute; right:19px; top:0; bottom:0; width:2px; background:linear-gradient(180deg, #06b6d4, #a855f7, transparent); }
+  .timeline-dot{ box-shadow:0 0 0 4px rgba(6,182,212,.15); }
+
+  #gate{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:#040711; background-image:radial-gradient(50vw 50vw at 50% 40%, rgba(99,102,241,.22), transparent 65%); padding:20px; }
+
+  .hidden{ display:none !important; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+
+  /* ===== NEW: Floating particles ===== */
+  .particle{ position:fixed; border-radius:50%; pointer-events:none; z-index:1; opacity:.5; animation:floatUp linear infinite; }
+  @keyframes floatUp{
+    0%{ transform:translateY(110vh) scale(1); opacity:0; }
+    10%{ opacity:.5; }
+    90%{ opacity:.4; }
+    100%{ transform:translateY(-10vh) scale(.4); opacity:0; }
+  }
+
+  /* ===== NEW: Chatbot ===== */
+  #chatbot{ position:fixed; bottom:24px; left:24px; z-index:1000; }
+  #chat-window{ display:none; position:absolute; bottom:70px; left:0; width:340px; max-height:480px; border-radius:20px; overflow:hidden; flex-direction:column; }
+  #chat-window.open{ display:flex; }
+  .chat-msg{ max-width:80%; padding:10px 14px; border-radius:16px; font-size:12.5px; line-height:1.7; }
+  .chat-msg.bot{ background:rgba(99,102,241,.15); border:1px solid rgba(99,102,241,.25); align-self:flex-start; border-bottom-right-radius:4px; }
+  .chat-msg.user{ background:linear-gradient(135deg,#06b6d4,#6366f1); color:#04101c; align-self:flex-end; border-bottom-left-radius:4px; font-weight:600; }
+
+  /* ===== NEW: Marquee ===== */
+  .marquee{ overflow:hidden; white-space:nowrap; }
+  .marquee-track{ display:inline-block; animation:marquee 30s linear infinite; }
+  @keyframes marquee{ 0%{transform:translateX(0);} 100%{transform:translateX(50%);} }
+
+  /* ===== NEW: Pulse ring on CTA ===== */
+  .pulse-ring{ position:relative; }
+  .pulse-ring::after{ content:''; position:absolute; inset:0; border-radius:inherit; border:2px solid rgba(6,182,212,.6); animation:pulse 2s ease-out infinite; }
+  @keyframes pulse{ 0%{transform:scale(1); opacity:1;} 100%{transform:scale(1.15); opacity:0;} }
+
+  /* ===== NEW: Gradient border hover ===== */
+  .hover-glow{ transition:all .3s; }
+  .hover-glow:hover{ border-color:rgba(6,182,212,.5); box-shadow:0 0 30px rgba(6,182,212,.15); transform:translateY(-4px); }
+
+  /* ===== NEW: Typewriter cursor ===== */
+  .type-cursor{ display:inline-block; width:2px; height:1em; background:#06b6d4; margin-left:2px; animation:blink 1s step-end infinite; vertical-align:middle; }
+  @keyframes blink{ 50%{opacity:0;} }
+
+  /* ===== NEW: Lightbox ===== */
+  .lightbox{ position:fixed; inset:0; z-index:2000; background:rgba(4,7,17,.92); display:none; align-items:center; justify-content:center; backdrop-filter:blur(10px); }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:90vw; max-height:85vh; border-radius:16px; box-shadow:0 30px 80px rgba(0,0,0,.6); }
+
+  /* ===== NEW: Skill bars ===== */
+  .skill-bar{ height:8px; border-radius:99px; background:rgba(255,255,255,.06); overflow:hidden; }
+  .skill-fill{ height:100%; border-radius:99px; background:linear-gradient(90deg,#06b6d4,#a855f7); width:0; transition:width 1.2s cubic-bezier(.22,1,.36,1); }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- ===== NEW: Floating particles background ===== -->
+<div id="particles"></div>
+
+<!-- ============================================================ -->
+<!-- GATE MODULE                                                    -->
+<!-- ============================================================ -->
+<div id="gate">
+  <div class="w-full max-w-sm p-10 text-center rounded-3xl glass glow-edge">
+    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center font-mono font-bold text-lg" style="background:linear-gradient(135deg,#06b6d4,#6366f1); color:#04101c; box-shadow:0 0 40px rgba(6,182,212,.45);">IT</div>
+    <h1 class="text-xl font-bold mb-1">بوابة قسم تكنولوجيا المعلومات</h1>
+    <p class="text-sm text-slate-400 mb-6">الكلية التقنية البوليتكنيك - كربلاء</p>
+    <input type="password" id="gate-pass" placeholder="•••• كلمة المرور •••" autocomplete="off"
+      class="w-full px-4 py-3.5 mb-3 rounded-xl bg-white/5 border border-white/10 text-center font-mono text-sm focus:outline-none focus:border-cyan tracking-wider">
+    <button id="gate-btn" class="w-full py-3.5 rounded-xl font-bold text-sm transition hover:-translate-y-0.5" style="background:linear-gradient(90deg,#06b6d4,#6366f1); color:#04101c;">دخول المنصة</button>
+    <div id="gate-err" class="text-rose-400 text-xs mt-3 min-h-[16px]"></div>
+    <div class="text-[11px] text-slate-500 mt-5">تطوير: المهندس عباس كريم عودة</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- NAV MODULE                                                     -->
+<!-- ============================================================ -->
+<header class="fixed top-0 inset-x-0 z-40 pt-4 px-4">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between rounded-2xl px-5 py-3 glass glow-edge">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm flex-shrink-0" style="background:linear-gradient(135deg,#06b6d4,#a855f7); color:#04101c;">IT</div>
+      <div class="leading-tight">
+        <div class="text-sm font-bold">IT Engineering Hub</div>
+        <div class="text-[10px] text-slate-400">الكلية التقنية البوليتكنيك - كربلاء</div>
+      </div>
+    </div>
+    <div class="hidden md:flex gap-1">
+      <button data-go="#hero" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">الرئيسية</button>
+      <button data-go="#academic" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">المنهاج والمصادر</button>
+      <button data-go="#codelab" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">مختبر الأكواد</button>
+      <button data-go="#projects" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">مشاريع التخرج</button>
+      <button data-go="#team" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">فريق العمل</button>
+      <button data-go="#timeline" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">الإعلانات</button>
+      <button data-go="#contact" class="nav-link px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 hover:text-white transition">تواصل معنا</button>
+    </div>
+  </nav>
+</header>
+
+<main id="app" class="opacity-0">
+
+  <!-- ============================================================ -->
+  <!-- 1. HERO SECTION — cinematic + 3D canvas background            -->
+  <!-- ============================================================ -->
+  <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center text-center px-5 pt-32 pb-20 overflow-hidden">
+    <canvas id="hero-3d"></canvas>
+    <div class="relative z-10 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs mb-7 glass" style="color:#06b6d4;">
+        <span class="w-1.5 h-1.5 rounded-full" style="background:#06b6d4; box-shadow:0 0 10px #06b6d4;"></span>
+        منصة تفاعلية متكاملة · معايير 2026
+      </div>
+      <h1 class="hero-title text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight grad-text">
+        منصة قسم هندسة<br>تكنولوجيا المعلومات
+      </h1>
+      <p class="hero-lead mt-6 text-slate-400 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+        تجربة رقمية سينمائية موحّدة لطلبة وتدريسيي القسم في الكلية التقنية البوليتكنيك - كربلاء، مبنية بأحدث معايير التصميم التفاعلي والحركي.
+      </p>
+      <div class="hero-cta mt-9 flex flex-wrap gap-3.5 justify-center">
+        <button data-go="#academic" class="px-8 py-4 rounded-xl font-bold text-sm transition hover:-translate-y-0.5 pulse-ring" style="background:linear-gradient(90deg,#06b6d4,#6366f1); color:#04101c; box-shadow:0 10px 34px rgba(6,182,212,.28);">استكشف المنهاج الدراسي</button>
+        <button data-go="#projects" class="px-8 py-4 rounded-xl font-bold text-sm border border-white/10 hover:bg-white/5 transition">مشاريع التخرج</button>
+      </div>
+    </div>
+    <div class="hero-stats relative z-10 mt-16 grid grid-cols-2 md:grid-cols-4 gap-3.5 w-full max-w-3xl">
+      <div class="stat rounded-2xl px-4 py-5 text-center glass"><div class="font-mono text-2xl font-bold" style="color:#06b6d4;" data-count="4">0</div><div class="text-[11px] text-slate-400 mt-1">مراحل دراسية</div></div>
+      <div class="stat rounded-2xl px-4 py-5 text-center glass"><div class="font-mono text-2xl font-bold" style="color:#06b6d4;" data-count="5">0</div><div class="text-[11px] text-slate-400 mt-1">لغات برمجة</div></div>
+      <div class="stat rounded-2xl px-4 py-5 text-center glass"><div class="font-mono text-2xl font-bold" style="color:#06b6d4;" data-count="12">0</div><div class="text-[11px] text-slate-400 mt-1">عضو فريق</div></div>
+      <div class="stat rounded-2xl px-4 py-5 text-center glass"><div class="font-mono text-2xl font-bold" style="color:#06b6d4;" data-count="600">0</div><div class="text-[11px] text-slate-400 mt-1">طالب وطالبة</div></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- NEW: MARQUEE TICKER                                           -->
+  <!-- ============================================================ -->
+  <div class="marquee py-4 border-y border-white/10 bg-white/[.02]">
+    <div class="marquee-track font-mono text-xs text-slate-400">
+      <span class="mx-6" style="color:#06b6d4;">✦</span> الذكاء الاصطناعي
+      <span class="mx-6" style="color:#a855f7;">✦</span> الأمن السيبراني
+      <span class="mx-6" style="color:#10b981;">✦</span> تطوير الويب
+      <span class="mx-6" style="color:#fbbf24;">✦</span> الحوسبة السحابية
+      <span class="mx-6" style="color:#06b6d4;">✦</span> إنترنت الأشياء
+      <span class="mx-6" style="color:#a855f7;">✦</span> DevOps
+      <span class="mx-6" style="color:#10b981;">✦</span> تعلم الآلة
+      <span class="mx-6" style="color:#fbbf24;">✦</span> الشبكات
+      <span class="mx-6" style="color:#06b6d4;">✦</span> قواعد البيانات
+      <span class="mx-6" style="color:#a855f7;">✦</span> تطوير التطبيقات
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 2. ACADEMIC & MATERIALS HUB — bento grid + filters             -->
+  <!-- ============================================================ -->
+  <section id="academic" class="py-28 px-5">
+    <div class="max-w-6xl mx-auto">
+      <div class="section-head max-w-xl mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#10b981; background:rgba(16,185,129,.12);">Academic & Materials Hub</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">المنهاج والمصادر الدراسية</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">تصفح مواد القسم عبر المراحل الأربع، وفلترها فورياً حسب المرحلة أو نوع المادة.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5 mb-4" id="stage-filters"></div>
+      <div class="flex flex-wrap gap-2.5 mb-8" id="type-filters"></div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="bento-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. INTERACTIVE CODE & TOOLS LAB                                -->
+  <!-- ============================================================ -->
+  <section id="codelab" class="py-28 px-5">
+    <div class="max-w-6xl mx-auto">
+      <div class="section-head max-w-xl mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#10b981; background:rgba(16,185,129,.12);">Interactive Code & Tools Lab</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">مختبر الأكواد والأدوات التفاعلي</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">اطّلع على مقتطفات كود جاهزة بعدة لغات، انسخها بضغطة واحدة، أو عاين نتيجتها مباشرة.</p>
+      </div>
+      <div class="flex flex-wrap gap-2.5 mb-8" id="lang-filters"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5" id="code-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- NEW: GRADUATION PROJECTS SHOWCASE                             -->
+  <!-- ============================================================ -->
+  <section id="projects" class="py-28 px-5">
+    <div class="max-w-6xl mx-auto">
+      <div class="section-head max-w-xl mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#fbbf24; background:rgba(251,191,36,.12);">Graduation Projects Showcase</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">مشاريع التخرج المميزة</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">أبرز مشاريع تخرج طلبة القسم لهذا العام — إبداعات تقنية تعكس مهارات الخريجين.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="projects-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- NEW: SKILLS & STATS SECTION                                   -->
+  <!-- ============================================================ -->
+  <section id="skills" class="py-28 px-5">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-head max-w-xl mb-12">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#06b6d4; background:rgba(6,182,212,.12);">Skills & Competencies</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">مهارات خريجينا</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">نسبة إتقان الخريجين للمهارات التقنية الأساسية المطلوبة في سوق العمل.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="skills-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. TEAM & PROJECT MEMBERS — 3D tilt cards                      -->
+  <!-- ============================================================ -->
+  <section id="team" class="py-28 px-5">
+    <div class="max-w-6xl mx-auto">
+      <div class="section-head max-w-xl mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#10b981; background:rgba(16,185,129,.12);">Team & Project Members</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">فريق العمل والطلبة المشاركون</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">تعرّف على فريق القسم وطلبة المشروع — حرّك الفأرة فوق البطاقة للتفاعل معها ثلاثي الأبعاد.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="team-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. ANNOUNCEMENTS & UPDATES TIMELINE                            -->
+  <!-- ============================================================ -->
+  <section id="timeline" class="py-28 px-5">
+    <div class="max-w-3xl mx-auto">
+      <div class="section-head mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#10b981; background:rgba(16,185,129,.12);">Announcements & Updates</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">شريط الإعلانات والتحديثات</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">آخر مستجدات القسم أولاً بأول.</p>
+      </div>
+      <div class="relative pr-12" id="timeline-list"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- NEW: CONTACT SECTION                                          -->
+  <!-- ============================================================ -->
+  <section id="contact" class="py-28 px-5">
+    <div class="max-w-4xl mx-auto">
+      <div class="section-head max-w-xl mb-10">
+        <span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full mb-3" style="color:#a855f7; background:rgba(168,85,247,.12);">Contact & Support</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold leading-snug">تواصل معنا</h2>
+        <p class="text-slate-400 mt-3 text-sm leading-relaxed">لديك استفسار أو اقتراح؟ راسلنا وسنرد عليك في أقرب وقت.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass rounded-2xl p-8 glow-edge hover-glow">
+          <h3 class="font-bold text-lg mb-4" style="color:#06b6d4;">معلومات التواصل</h3>
+          <div class="space-y-4 text-sm text-slate-300">
+            <div class="flex items-center gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(6,182,212,.12);">📍</span> الكلية التقنية البوليتكنيك - كربلاء</div>
+            <div class="flex items-center gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(99,102,241,.12);">📧</span> it.department@kpt.edu.iq</div>
+            <div class="flex items-center gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(168,85,247,.12);">📞</span> +964 780 000 0000</div>
+            <div class="flex items-center gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(16,185,129,.12);">🕒</span> الأحد - الخميس: 8:00 ص - 3:00 م</div>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-8 glow-edge">
+          <h3 class="font-bold text-lg mb-4" style="color:#a855f7;">أرسل رسالتك</h3>
+          <form id="contact-form" class="space-y-4">
+            <input type="text" placeholder="الاسم الكامل" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan">
+            <input type="email" placeholder="البريد الإلكتروني" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan">
+            <textarea placeholder="رسالتك..." rows="4" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan resize-none"></textarea>
+            <button type="submit" class="w-full py-3.5 rounded-xl font-bold text-sm transition hover:-translate-y-0.5" style="background:linear-gradient(90deg,#a855f7,#6366f1); color:#04101c;">إرسال الرسالة</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-12 border-t border-white/10 text-center px-5">
+    <p class="text-xs text-slate-500">© 2026 قسم هندسة تكنولوجيا المعلومات — الكلية التقنية البوليتكنيك كربلاء</p>
+    <p class="text-xs text-slate-500 mt-1.5">تطوير: <b class="text-slate-300">المهندس عباس كريم عودة</b></p>
+  </footer>
+</main>
+
+<!-- ============================================================ -->
+<!-- NEW: AI CHATBOT ASSISTANT                                      -->
+<!-- ============================================================ -->
+<div id="chatbot">
+  <div id="chat-window" class="glass glow-edge">
+    <div class="p-4 border-b border-white/10 flex items-center gap-3" style="background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(99,102,241,.15));">
+      <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm" style="background:linear-gradient(135deg,#06b6d4,#a855f7); color:#04101c;">🤖</div>
+      <div>
+        <div class="text-sm font-bold">مساعد القسم الذكي</div>
+        <div class="text-[10px]" style="color:#10b981;">● متصل الآن</div>
+      </div>
+      <button id="chat-close" class="mr-auto text-slate-400 hover:text-white text-sm">✕</button>
+    </div>
+    <div id="chat-body" class="p-4 flex flex-col gap-3 overflow-y-auto" style="max-height:340px; min-height:200px;">
+      <div class="chat-msg bot">أهلاً بك! أنا مساعد قسم تكنولوجيا المعلومات الذكي. اسألني عن المنهاج، المواعيد، المشاريع، أو أي شيء آخر. 🎓</div>
+    </div>
+    <div class="p-3 border-t border-white/10 flex gap-2">
+      <input id="chat-input" type="text" placeholder="اكتب سؤالك هنا..." class="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs focus:outline-none focus:border-cyan">
+      <button id="chat-send" class="px-4 py-2.5 rounded-xl font-bold text-xs" style="background:linear-gradient(90deg,#06b6d4,#6366f1); color:#04101c;">إرسال</button>
+    </div>
+  </div>
+  <button id="chat-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl transition hover:scale-110" style="background:linear-gradient(135deg,#06b6d4,#a855f7); color:#04101c; box-shadow:0 10px 40px rgba(6,182,212,.4);">💬</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- NEW: LIGHTBOX                                                 -->
+<!-- ============================================================ -->
+<div id="lightbox" class="lightbox">
+  <img id="lightbox-img" src="" alt="معاينة">
+  <button id="lightbox-close" class="absolute top-6 left-6 w-10 h-10 rounded-full bg-white/10 text-white text-lg">✕</button>
+</div>
+
+<script>
+'use strict';
+/* =========================================
+   DATA MODULE
+========================================= */
+const STAGES = ['المرحلة الأولى','المرحلة الثانية','المرحلة الثالثة','المرحلة الرابعة'];
+const TYPES = ['نظري','عملي','مختبر','مشروع'];
+
+const COURSES = [
+  {id:1, title:'أساسيات البرمجة', stage:'المرحلة الأولى', type:'نظري', icon:'💻', desc:'مقدمة في الخوارزميات ولغة البرمجة C++', color:'#06b6d4'},
+  {id:2, title:'مختبر البرمجة', stage:'المرحلة الأولى', type:'مختبر', icon:'🖥️', desc:'تطبيقات عملية على أساسيات البرمجة', color:'#10b981'},
+  {id:3, title:'الرياضيات المتقطعة', stage:'المرحلة الأولى', type:'نظري', icon:'📐', desc:'أسس المنطق الرياضي ونظرية المجموعات', color:'#a855f7'},
+  {id:4, title:'أساسيات الحاسوب', stage:'المرحلة الأولى', type:'نظري', icon:'🖱️', desc:'مكونات الحاسوب وأنظمة التشغيل', color:'#6366f1'},
+  {id:5, title:'البرمجة الكائنية', stage:'المرحلة الثانية', type:'نظري', icon:'🧩', desc:'مبادئ OOP بلغة Java', color:'#06b6d4'},
+  {id:6, title:'قواعد البيانات', stage:'المرحلة الثانية', type:'نظري', icon:'🗄️', desc:'تصميم قواعد البيانات و SQL', color:'#10b981'},
+  {id:7, title:'شبكات الحاسوب', stage:'المرحلة الثانية', type:'نظري', icon:'🌐', desc:'أساسيات الشبكات وبروتوكولاتها', color:'#a855f7'},
+  {id:8, title:'مختبر الشبكات', stage:'المرحلة الثانية', type:'مختبر', icon:'🔌', desc:'تطبيقات عملية على إعداد الشبكات', color:'#6366f1'},
+  {id:9, title:'تطوير الويب', stage:'المرحلة الثالثة', type:'عملي', icon:'🌍', desc:'HTML, CSS, JavaScript و React', color:'#06b6d4'},
+  {id:10, title:'الذكاء الاصطناعي', stage:'المرحلة الثالثة', type:'نظري', icon:'🤖', desc:'مقدمة في الذكاء الاصطناعي وتعلم الآلة', color:'#10b981'},
+  {id:11, title:'الأمن السيبراني', stage:'المرحلة الثالثة', type:'نظري', icon:'🛡️', desc:'أساسيات أمن المعلومات والحماية', color:'#a855f7'},
+  {id:12, title:'مشروع التخرج', stage:'المرحلة الرابعة', type:'مشروع', icon:'🎓', desc:'مشروع تطبيقي متكامل في التخصص', color:'#6366f1'},
+  {id:13, title:'هندسة البرمجيات', stage:'المرحلة الرابعة', type:'نظري', icon:'📊', desc:'منهجيات تطوير البرمجيات وإدارة المشاريع', color:'#06b6d4'},
+  {id:14, title:'الحوسبة السحابية', stage:'المرحلة الرابعة', type:'نظري', icon:'☁️', desc:'مفاهيم السحابة وخدماتها', color:'#10b981'},
+  {id:15, title:'إنترنت الأشياء', stage:'المرحلة الرابعة', type:'عملي', icon:'📡', desc:'تطبيقات IoT والأنظمة المدمجة', color:'#a855f7'},
+];
+
+const CODES = [
+  {id:1, lang:'Python', title:'نظام مراقبة موارد الحاسوب', code:`from fastapi import FastAPI
+import psutil
+
+app = FastAPI()
+
+@app.get("/api/resources")
+def get_resources():
+    return {
+        "cpu_usage": psutil.cpu_percent(interval=1),
+        "memory": dict(psutil.virtual_memory()._asdict()),
+        "disk": dict(psutil.disk_usage('/')._asdict())
+    }`, desc:'FastAPI + psutil لمراقبة CPU و RAM و القرص', color:'#10b981'},
+  {id:2, lang:'Node.js', title:'نظام إدارة الأوامر الإدارية', code:`const express = require('express');
+const app = express();
+app.use(express.json());
+
+let orders = [];
+
+app.post('/api/order', (req, res) => {
+    const order = { id: orders.length + 1, ...req.body };
+    orders.push(order);
+    res.json({ message: 'تم إنشاء الأمر بنجاح', order });
+});
+
+app.listen(5000);`, desc:'Express + JSON لإنشاء أوامر إدارية', color:'#06b6d4'},
+  {id:3, lang:'JavaScript', title:'نظام حجز مواعيد العيادة', code:`const appointments = [];
+
+function bookAppointment(name, date) {
+    appointments.push({ name, date, status: 'محجوز' });
+    return { message: 'تم حجز الموعد بنجاح', count: appointments.length };
+}
+
+console.log(bookAppointment('أحمد', '2026-10-05'));`, desc:'JavaScript بسيط لإدارة حجز المواعيد', color:'#a855f7'},
+  {id:4, lang:'Python', title:'نظام إدارة المشاريع', code:`class Project:
+    def __init__(self, name, status):
+        self.name = name
+        self.status = status
+
+projects = [
+    Project('مشروع التخرج', 'قيد التنفيذ'),
+    Project('مشروع التدريب', 'مكتمل')
+]
+
+for p in projects:
+    print(f"{p.name}: {p.status}")`, desc:'Python OOP لإدارة المشاريع', color:'#6366f1'},
+];
+
+const PROJECTS = [
+  {id:1, title:'نظام ذكي لمراقبة موارد الحاسوب', desc:'FastAPI + psutil لمراقبة CPU و RAM و القرص', tags:['Python','FastAPI','Dashboard'], color:'#06b6d4'},
+  {id:2, title:'نظام إدارة الأوامر الإدارية', desc:'Node.js + PDFKit لتوليد الأوامر الرسمية', tags:['Node.js','Express','PDF'], color:'#10b981'},
+  {id:3, title:'نظام حجز مواعيد العيادة', desc:'Flask + SQLite لإدارة المواعيد والمرضى', tags:['Python','Flask','SQLite'], color:'#a855f7'},
+  {id:4, title:'نظام اكتشاف أعطال الشبكات', desc:'Scapy + Deep Learning لاكتشاف الأعطال', tags:['Python','Scapy','ML'], color:'#6366f1'},
+  {id:5, title:'نظام التوعية الأمنية', desc:'Phishing simulations + quizzes', tags:['Web','Security','Training'], color:'#06b6d4'},
+  {id:6, title:'نظام إدارة الطاقة الذكي', desc:'MQTT + React dashboard', tags:['IoT','React','MQTT'], color:'#10b981'},
+];
+
+const TEAM = [
+  {id:1, name:'د. محمد علي', role:'أستاذ مساعد', desc:'مدير القسم', skills:['Python','AI','Management'], img:'👨‍🏫'},
+  {id:2, name:'د. سارة حسن', role:'أستاذ مساعد', desc:'تطوير الويب', skills:['JavaScript','React','Node.js'], img:'👩‍💻'},
+  {id:3, name:'د. خالد إبراهيم', role:'أستاذ مساعد', desc:'الأمن السيبراني', skills:['Security','Networks','Python'], img:'👨‍💻'},
+  {id:4, name:'د. فاطمة علي', role:'أستاذ مساعد', desc:'قواعد البيانات', skills:['SQL','NoSQL','DBA'], img:'👩‍🏫'},
+  {id:5, name:'د. عمر محمود', role:'أستاذ مساعد', desc:'الذكاء الاصطناعي', skills:['ML','AI','Data Science'], img:'👨‍🔬'},
+  {id:6, name:'د. نورا سعيد', role:'أستاذ مساعد', desc:'الحوسبة السحابية', skills:['Cloud','DevOps','AWS'], img:'👩‍💻'},
+];
+
+const ANNOUNCEMENTS = [
+  {id:1, date:'2026-10-03', title:'افتتاح باب التسجيل لمشاريع التخرج', desc:'ابدأ الآن في اختيار مشروعك وتسجيله في النظام.', color:'#06b6d4'},
+  {id:2, date:'2026-10-02', title:'موعد عرض مشاريع التخرج النهائية', desc:'سيتم عرض جميع المشاريع في يوم الجمعة القادم.', color:'#10b981'},
+  {id:3, date:'2026-09-30', title:'ورشة عمل حول الذكاء الاصطناعي', desc:'ورشة عملية يوم الأحد الساعة 10 صباحاً.', color:'#a855f7'},
+  {id:4, date:'2026-09-28', title:'تغيير موعد الاختبارات النهائية', desc:'تم نقل الاختبارات من الأسبوع القادم.', color:'#6366f1'},
+];
+
+const SKILLS = [
+  {name:'تطوير الويب', percent:92},
+  {name:'البرمجة بلغة Python', percent:88},
+  {name:'قواعد البيانات', percent:85},
+  {name:'الشبكات', percent:80},
+  {name:'الأمن السيبراني', percent:78},
+  {name:'الذكاء الاصطناعي', percent:75},
+];
+
+/* =========================================
+   RENDER FUNCTIONS
+========================================= */
+function renderFilters(id, items, active, callback){
+  const el = document.getElementById(id);
+  el.innerHTML = items.map(i => `
+    <button data-filter="${i}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${i===active?'bg-white/10 text-white':'text-slate-400 hover:bg-white/5'}">${i}</button>
+  `).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => callback(b.dataset.filter));
+  });
+}
+
+function renderCourses(stage='الكل', type='الكل'){
+  const grid = document.getElementById('bento-grid');
+  const filtered = COURSES.filter(c => (stage==='الكل'||c.stage===stage) && (type==='الكل'||c.type===type));
+  grid.innerHTML = filtered.map(c => `
+    <div class="glass rounded-2xl p-5 hover-glow cursor-pointer tilt-3d" style="border-top:3px solid ${c.color}">
+      <div class="text-2xl mb-3">${c.icon}</div>
+      <h3 class="font-bold text-sm mb-1">${c.title}</h3>
+      <p class="text-[11px] text-slate-400 mb-2">${c.desc}</p>
+      <div class="flex flex-wrap gap-1">
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-300">${c.stage}</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-300">${c.type}</span>
+      </div>
+    </div>
+  `).join('');
+  initTilt();
+}
+
+function renderCodes(lang='الكل'){
+  const grid = document.getElementById('code-grid');
+  const filtered = lang==='الكل'?CODES:CODES.filter(c=>c.lang===lang);
+  grid.innerHTML = filtered.map(c => `
+    <div class="glass rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold" style="color:${c.color}">${c.lang}</div>
+          <div class="text-[11px] text-slate-400">${c.title}</div>
+        </div>
+        <button class="copy-btn text-xs px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10" onclick="navigator.clipboard.writeText(\`${c.code.replace(/`/g,'\\`')}\`); this.textContent='✓'; setTimeout(()=>this.textContent='نسخ',2000)">نسخ</button>
+      </div>
+      <div class="code-block"><pre><code>${c.code}</code></pre></div>
+      <div class="p-3 text-[11px] text-slate-400">${c.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderProjects(){
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = PROJECTS.map(p => `
+    <div class="glass rounded-2xl p-5 hover-glow cursor-pointer tilt-3d" style="border-top:3px solid ${p.color}">
+      <h3 class="font-bold text-sm mb-2">${p.title}</h3>
+      <p class="text-[11px] text-slate-400 mb-3">${p.desc}</p>
+      <div class="flex flex-wrap gap-1.5">
+        ${p.tags.map(t => `<span class="text-[10px] px-2 py-1 rounded-full bg-white/5 text-slate-300">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  initTilt();
+}
+
+function renderTeam(){
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = TEAM.map(m => `
+    <div class="glass rounded-2xl p-6 text-center tilt-3d">
+      <div class="text-4xl mb-3">${m.img}</div>
+      <h3 class="font-bold text-sm mb-1">${m.name}</h3>
+      <p class="text-[11px] font-bold mb-2" style="color:${m.role==='أستاذ مساعد'?'#06b6d4':'#a855f7'}">${m.role}</p>
+      <p class="text-[10px] text-slate-400 mb-3">${m.desc}</p>
+      <div class="flex flex-wrap justify-center gap-1.5 mt-4">
+        ${m.skills.map(s => `<span class="text-[10px] px-2 py-1 rounded-full bg-white/5 text-slate-300">${s}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  initTilt();
+}
+
+function renderTimeline(){
+  const list = document.getElementById('timeline-list');
+  list.innerHTML = ANNOUNCEMENTS.map(a => `
+    <div class="relative pb-8">
+      <span class="timeline-dot absolute right-0 top-1 w-3 h-3 rounded-full" style="background:${a.color};"></span>
+      <div class="glass rounded-2xl p-5 hover-glow mr-6">
+        <div class="text-[10px] font-mono mb-1" style="color:${a.color};">${a.date}</div>
+        <h3 class="font-bold text-sm mb-1">${a.title}</h3>
+        <p class="text-[11px] text-slate-400 leading-relaxed">${a.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSkills(){
+  const grid = document.getElementById('skills-grid');
+  grid.innerHTML = SKILLS.map(s => `
+    <div>
+      <div class="flex justify-between text-xs mb-2">
+        <span class="font-bold">${s.name}</span>
+        <span class="font-mono" style="color:#06b6d4;">${s.percent}%</span>
+      </div>
+      <div class="skill-bar"><div class="skill-fill" data-w="${s.percent}"></div></div>
+    </div>
+  `).join('');
+}
+
+/* =========================================
+   INTERACTIONS
+========================================= */
+function initTilt(){
+  document.querySelectorAll('.tilt-3d').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+}
+
+function initParticles(){
+  const container = document.getElementById('particles');
+  const colors = ['#06b6d4','#a855f7','#6366f1','#10b981'];
+  for(let i=0;i<25;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random()*4+2;
+    p.style.width = size+'px'; p.style.height = size+'px';
+    p.style.left = Math.random()*100+'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDuration = (Math.random()*15+10)+'s';
+    p.style.animationDelay = (Math.random()*10)+'s';
+    container.appendChild(p);
+  }
+}
+
+function initCounters(){
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = +el.dataset.count;
+    const dur = 1500; const start = performance.now();
+    function tick(now){
+      const p = Math.min((now-start)/dur, 1);
+      el.textContent = Math.floor(target * (1-Math.pow(1-p,3)));
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function init3D(){
+  const canvas = document.getElementById('hero-3d');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
+  camera.position.z = 5;
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const geometry = new THREE.IcosahedronGeometry(1.4, 1);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x6366f1, wireframe:true, transparent:true, opacity:0.35, metalness:0.6, roughness:0.2
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const particles = new THREE.BufferGeometry();
+  const count = 400; const pos = new Float32Array(count*3);
+  for(let i=0;i<count*3;i++) pos[i] = (Math.random()-0.5)*12;
+  particles.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const pMat = new THREE.PointsMaterial({color:0x06b6d4, size:0.02, transparent:true, opacity:0.7});
+  const points = new THREE.Points(particles, pMat);
+  scene.add(points);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const light = new THREE.PointLight(0x06b6d4, 1, 20);
+  light.position.set(3,3,3); scene.add(light);
+
+  function animate(){
+    requestAnimationFrame(animate);
+    mesh.rotation.x += 0.003; mesh.rotation.y += 0.005;
+    points.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = canvas.clientWidth/canvas.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  });
+}
+
+function initScrollAnimations(){
+  gsap.registerPlugin(ScrollTrigger);
+  document.querySelectorAll('.section-head').forEach(head => {
+    gsap.from(head, {opacity:0, y:40, duration:0.8, scrollTrigger:{trigger:head, start:'top 85%'}});
+  });
+  document.querySelectorAll('.tilt-3d').forEach(card => {
+    gsap.from(card, {opacity:0, y:30, duration:0.6, scrollTrigger:{trigger:card, start:'top 90%'}});
+  });
+  // Skill bars animate on scroll
+  ScrollTrigger.create({
+    trigger:'#skills', start:'top 80%',
+    onEnter: () => document.querySelectorAll('.skill-fill').forEach(f => f.style.width = f.dataset.w+'%')
+  });
+}
+
+/* =========================================
+   CHATBOT
+========================================= */
+const BOT_ANSWERS = {
+  'منهاج': 'المنهاج يشمل 4 مراحل دراسية تغطي البرمجة، قواعد البيانات، الشبكات، الذكاء الاصطناعي، والأمن السيبراني.',
+  'موعد': 'يمكنك الاطلاع على المواعيد والإعلانات في قسم "شريط الإعلانات" أعلى الصفحة.',
+  'مشروع': 'لدينا 6 مشاريع تخرج مميزة معروضة في قسم "مشاريع التخرج". يمكنك الاطلاع عليها بالتفصيل.',
+  'تواصل': 'يمكنك التواصل معنا عبر نموذج "تواصل معنا" أو عبر البريد الإلكتروني it.department@kpt.edu.iq',
+  'مرحبا': 'أهلاً بك! كيف يمكنني مساعدتك اليوم؟ اسألني عن المنهاج، المواعيد، المشاريع، أو أي شيء آخر.',
+  'شكرا': 'على الرحب والسعة! لا تتردد في سؤالي في أي وقت. 😊',
+  'القسم': 'قسم هندسة تكنولوجيا المعلومات في الكلية التقنية البوليتكنيك - كربلاء، يضم 4 مراحل دراسية وأكثر من 600 طالب وطالبة.',
+  'مهارات': 'خريجونا يتقنون تطوير الويب، البرمجة بلغة Python، قواعد البيانات، الشبكات، والذكاء الاصطناعي.',
+};
+
+function initChatbot(){
+  const toggle = document.getElementById('chat-toggle');
+  const windowEl = document.getElementById('chat-window');
+  const close = document.getElementById('chat-close');
+  const send = document.getElementById('chat-send');
+  const input = document.getElementById('chat-input');
+  const body = document.getElementById('chat-body');
+
+  toggle.addEventListener('click', () => windowEl.classList.toggle('open'));
+  close.addEventListener('click', () => windowEl.classList.remove('open'));
+
+  function addMsg(text, isUser){
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + (isUser ? 'user' : 'bot');
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function botReply(q){
+    const ql = q.toLowerCase();
+    let answer = 'عذراً، لم أجد إجابة دقيقة على سؤالك. يمكنك التواصل مع إدارة القسم مباشرة.';
+    for(const key in BOT_ANSWERS){
+      if(ql.includes(key)){ answer = BOT_ANSWERS[key]; break; }
+    }
+    setTimeout(() => addMsg(answer, false), 500);
+  }
+
+  send.addEventListener('click', () => {
+    const q = input.value.trim();
+    if(!q) return;
+    addMsg(q, true);
+    input.value = '';
+    botReply(q);
+  });
+  input.addEventListener('keydown', e => { if(e.key==='Enter') send.click(); });
+}
+
+/* =========================================
+   CONTACT FORM
+========================================= */
+function initContact(){
+  document.getElementById('contact-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = '✓ تم إرسال الرسالة بنجاح!';
+    btn.style.background = 'linear-gradient(90deg,#10b981,#06b6d4)';
+    setTimeout(() => { btn.textContent = 'إرسال الرسالة'; btn.style.background = ''; e.target.reset(); }, 2500);
+  });
+}
+
+/* =========================================
+   GATE
+========================================= */
+function initGate(){
+  const btn = document.getElementById('gate-btn');
+  const input = document.getElementById('gate-pass');
+  const err = document.getElementById('gate-err');
+  const app = document.getElementById('app');
+
+  function tryOpen(){
+    const v = input.value.trim();
+    if(v === 'IT2026' || v === 'it2026'){
+      document.getElementById('gate').classList.add('hidden');
+      app.classList.remove('opacity-0');
+      app.classList.add('opacity-100');
+      initCounters(); init3D(); initScrollAnimations();
+      document.querySelectorAll('.skill-fill').forEach(f => f.style.width = f.dataset.w+'%');
+      gsap.to(app, {opacity:1, duration:0.6});
+    } else {
+      err.textContent = 'كلمة المرور غير صحيحة. حاول مرة أخرى.';
+      input.value = '';
+      input.focus();
+    }
+  }
+  btn.addEventListener('click', tryOpen);
+  input.addEventListener('keydown', e => { if(e.key==='Enter') tryOpen(); });
+}
+
+/* =========================================
+   NAV
+========================================= */
+function initNav(){
+  document.querySelectorAll('[data-go]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.querySelector(btn.dataset.go);
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    });
+  });
+}
+
+/* =========================================
+   LIGHTBOX
+========================================= */
+function initLightbox(){
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  document.getElementById('lightbox-close').addEventListener('click', () => lb.classList.remove('open'));
+  lb.addEventListener('click', e => { if(e.target===lb) lb.classList.remove('open'); });
+}
+
+/* =========================================
+   INIT
+========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  initGate();
+  initNav();
+  initChatbot();
+  initContact();
+  initLightbox();
+
+  // Filters
+  renderFilters('stage-filters', ['الكل', ...STAGES], 'الكل', s => renderCourses(s, 'الكل'));
+  renderFilters('type-filters', ['الكل', ...TYPES], 'الكل', t => renderCourses('الكل', t));
+  renderFilters('lang-filters', ['الكل', ...CODES.map(c=>c.lang).filter((v,i,a)=>a.indexOf(v)===i)], 'الكل', l => renderCodes(l));
+
+  renderCourses(); renderCodes(); renderProjects(); renderTeam(); renderTimeline(); renderSkills();
+});
+</script>
+</body>
+</html>
